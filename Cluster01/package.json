@@ -1,0 +1,18 @@
+{
+  "name": "Cluster01",
+  "version": "0.0.0",
+  "description": "Cluster01",
+  "main": "app.js",
+  "author": {
+    "name": "hanmilu",
+    "email": ""
+  },
+  "dependencies": {
+    "express": "^3.4.4",
+    "jade": "*",
+    "stylus": "*",
+    "node-gcm": "^0.9.10",
+    "request": "^2.34.0",
+    "mysql": "^2.1.1"
+  }
+}
