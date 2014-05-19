@@ -38,7 +38,7 @@ app.get('/', routes.index);
 app.post('/', routes.index);
 app.get('/users', user.list);
 
-app.post('/signup', userhandler.signup);
+app.post('/signup', userHandler.signup);
 app.post('/register', push.regist);
 app.get('/send', push.send_push);
 
