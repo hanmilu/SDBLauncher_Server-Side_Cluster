@@ -11,6 +11,7 @@ var path = require('path');
 var push = require('./push');
 var mysql = require('mysql');
 var datahandler = require('./modules/datahandler.js');
+var userHandler = require('./modules/userhandler.js');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.get('/', routes.index);
 app.post('/', routes.index);
 app.get('/users', user.list);
 
+app.post('/signup', userhandler.signup);
 app.post('/register', push.regist);
 app.get('/send', push.send_push);
 

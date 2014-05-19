@@ -19,7 +19,6 @@ exports.regist = function (req, res) {
         connection.query("insert into user_info (device_num, reg_id, google_id) values (?);", [post2], function(err, result){
             if (err) {
                 console.log(err);
-                throw err;
             }
 
             console.log(result);
