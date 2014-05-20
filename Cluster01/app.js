@@ -43,6 +43,8 @@ app.post('/register', push.regist);
 app.get('/send', push.send_push);
 
 app.post('/data', datahandler.collect);
+app.post('/appdata/append', datahandler.GetAppData);
+app.get('/appdata/append', datahandler.GetAppData);
 //app.get('/data', datahandler.collect);
 
 http.createServer(app).listen(app.get('port'), '192.168.0.5', function(){
