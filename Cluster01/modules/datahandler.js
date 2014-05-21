@@ -121,7 +121,11 @@ exports.GetAppData = function (req, res) {
                                         }
                                         cnt++;
                                         if (cnt == JsonData.appdata.length) {
-                                            notyAppDataUpdateComp(id);
+                                            connection.query("select user_id from user_info where google_id = ?", id, function (err, result) {
+                                                id = result[0]['user_id'];
+                                                connection.release();
+                                                notyAppDataUpdateComp(id);
+                                            });
                                         }
                                         connection.release();
                                     });
@@ -148,7 +152,11 @@ exports.GetAppData = function (req, res) {
                                         }
                                         cnt++;
                                         if (cnt == JsonData.appdata.length) {
-                                            notyAppDataUpdateComp(id);
+                                            connection.query("select user_id from user_info where google_id = ?", id, function (err, result) {
+                                                id = result[0]['user_id'];
+                                                connection.release();
+                                                notyAppDataUpdateComp(id);
+                                            });
                                         }
                                         connection.release();
                                     });
@@ -164,7 +172,11 @@ exports.GetAppData = function (req, res) {
                         }
                         cnt++;
                         if (cnt == JsonData.appdata.length) {
-                            notyAppDataUpdateComp(id);
+                            connection.query("select user_id from user_info where google_id = ?", id, function (err, result) {
+                                id = result[0]['user_id'];
+                                connection.release();
+                                notyAppDataUpdateComp(id);
+                            });
                         }
                         connection.release();
                     });
