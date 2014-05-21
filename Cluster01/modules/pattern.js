@@ -1,4 +1,5 @@
 ﻿var mysql = require('mysql');
+var gcm = require('node-gcm');
 
 exports.getPattern = function(req, res) {
     var pool = mysql.createPool({
@@ -125,5 +126,75 @@ exports.getPattern = function(req, res) {
                 }
             }
         });
+    });
+}
+
+exports.singlePatternCmp = function (req, res) {
+
+    var id = req.body.id;
+
+    var message = new gcm.Message();
+    var sender = new gcm.Sender('AIzaSyAcagZo44cCppJyvl_ZYVSwI7hlpTCOXD8');
+    var registrationIds = [];
+
+    // Optional
+    //message.
+    //message.collapseKey = 'demo';
+    message.addDataWithObject({
+        "userid": id,
+        "discription": "SINGLE_PATTERN_COMPLETE"
+    });
+    message.delayWhileIdle = true;
+    message.timeToLive = 3;
+
+    var connection = mysql.createConnection({
+        host: "123.228.65.104",
+        port: "4406",
+        user: "clusters",
+        password: "alfmvkr88",
+        database: "sdb_data"
+    });
+
+    connection.connect(function (err) {
+        if (err) {
+        } else {
+            connection.query("select reg_id from user_info where user_id = ?", id, function (err, result) {
+                //registrationIds = result;
+                var temp = result[0]['reg_id'].replace("\'", "");
+                temp = temp.replace("\'", "");
+                registrationIds.push(temp);
+
+                console.log("reg : ");
+                console.log(registrationIds);
+                console.log("res : ");
+                sender.send(message, registrationIds, 4, function (err, result) {
+                    console.log(result);
+                });
+                res.end();
+            });
+        }
+    });
+}
+
+exports.singlePattern = function (req, res) {
+    var id = req.body.id;
+
+    var connection = mysql.createConnection({
+        host: "123.228.65.104",
+        port: "4406",
+        user: "clusters",
+        password: "alfmvkr88",
+        database: "sdb_data"
+    });
+
+    connection.connect(function (err) {
+        if (err) {
+        } else {
+            connection.query("select * from single_pattern where user_id = ?", id, function (err, result) {
+                
+                res.writeHead(200, { 'content-Type': 'application/json' });
+                res.end(JSON.stringify(result));
+            });
+        }
     });
 }

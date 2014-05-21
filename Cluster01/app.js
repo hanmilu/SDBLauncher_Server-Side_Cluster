@@ -48,6 +48,8 @@ app.post('/appdata/append', datahandler.GetAppData);
 app.get('/appdata/append', datahandler.GetAppData);
 app.post('/appdata/get', datahandler.GetCategory);
 app.post('/pattern/getpattern', patternhandler.getPattern);
+app.post('/pattern/singlePatternCmp', patternhandler.singlePatternCmp);
+app.post('/pattern/singlePattern', patternhandler.singlePattern);
 //app.get('/data', datahandler.collect);
 
 http.createServer(app).listen(app.get('port'), '192.168.0.5', function(){
