@@ -1,5 +1,6 @@
 ﻿var mysql = require('mysql');
 var request = require('request');
+var gcm = require('node-gcm');
 
 exports.collect = function(req, res) {
     var JsonData = req.body;
@@ -68,6 +69,7 @@ exports.collect = function(req, res) {
 
 exports.GetAppData = function (req, res) {
     var JsonData = req.body;
+    var id = JsonData.id;
 
     var pool = mysql.createPool({
         host: "123.228.65.104",
@@ -82,6 +84,7 @@ exports.GetAppData = function (req, res) {
         var sql = "select if ( count ( app_id ) = 0, ?, app_id) as res from app_info where package = ?;";
         var token1 = '&access_token=e994786184258a89cdfc7a4b8307502408a978bf';
         var token2 = '&access_token=aef684eb0f1b2d7d7983d0c81ac12685a96b8da5';
+        var cnt = 0;
 
         for (var i = 0; i < JsonData.appdata.length; i++) {
             //connection.query(sql, function (err, result) {
@@ -116,10 +119,18 @@ exports.GetAppData = function (req, res) {
                                         if (err) {
                                             console.log(err);
                                         }
+                                        cnt++;
+                                        if (cnt == JsonData.appdata.length) {
+                                            notyAppDataUpdateComp(id);
+                                        }
                                         connection.release();
                                     });
                                 } else if (res.statusCode == 403) { // api request limit
                                     token1 = token2;
+                                    cnt++;
+                                    if (cnt == JsonData.appdata.length) {
+                                        notyAppDataUpdateComp(id);
+                                    }
                                 } else { // append appdata to db
                                     var sql2 = "insert into app_info (app_name, category, package) values (?);";
                                     var data = [];
@@ -135,7 +146,10 @@ exports.GetAppData = function (req, res) {
                                         if (err) {
                                             console.log(err);
                                         }
-
+                                        cnt++;
+                                        if (cnt == JsonData.appdata.length) {
+                                            notyAppDataUpdateComp(id);
+                                        }
                                         connection.release();
                                     });
                                 }
@@ -148,7 +162,10 @@ exports.GetAppData = function (req, res) {
                         if (err) {
                             console.log(err);
                         }
-
+                        cnt++;
+                        if (cnt == JsonData.appdata.length) {
+                            notyAppDataUpdateComp(id);
+                        }
                         connection.release();
                     });
                 }
@@ -158,6 +175,50 @@ exports.GetAppData = function (req, res) {
 
     res.writeHead(200, { 'content-Type': 'text/plain' });
     res.end("processing");
+}
+
+notyAppDataUpdateComp = function (id) {
+
+    var message = new gcm.Message();
+    var sender = new gcm.Sender('AIzaSyAcagZo44cCppJyvl_ZYVSwI7hlpTCOXD8');
+    var registrationIds = [];
+
+    var connection = mysql.createConnection({
+        host: "123.228.65.104",
+        port: "4406",
+        user: "clusters",
+        password: "alfmvkr88",
+        database: "sdb_data"
+    });
+
+    message.addDataWithObject({
+        "discription": "APPDATA_UPDATE_COMPLETE"
+    });
+    message.delayWhileIdle = true;
+    message.timeToLive = 3;
+
+    connection.connect(function (err) {
+        if (err) {
+        } else {
+            connection.query("select reg_id from user_info where user_id = ?", id, function (err, result) {
+                //registrationIds = result;
+                if (err) {
+                    console.log(err);
+                }
+
+                var temp = result[0]['reg_id'].replace("\'", "");
+                temp = temp.replace("\'", "");
+                registrationIds.push(temp);
+
+                console.log("reg : ");
+                console.log(registrationIds);
+                console.log("res : ");
+                sender.send(message, registrationIds, 4, function (err, result) {
+                    console.log(result);
+                });
+            });
+        }
+    });
 }
 
 exports.GetCategory = function(req, res) {
