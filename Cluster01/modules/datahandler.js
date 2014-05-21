@@ -70,6 +70,7 @@ exports.collect = function(req, res) {
 exports.GetAppData = function (req, res) {
     var JsonData = req.body;
     var id = JsonData.id;
+    var userid;
 
     var pool = mysql.createPool({
         host: "123.228.65.104",
@@ -122,9 +123,9 @@ exports.GetAppData = function (req, res) {
                                         cnt++;
                                         if (cnt == JsonData.appdata.length) {
                                             connection.query("select user_id from user_info where google_id = ?", id, function (err, result) {
-                                                id = result[0]['user_id'];
+                                                userid = result[0]['user_id'];
                                                 connection.release();
-                                                notyAppDataUpdateComp(id);
+                                                notyAppDataUpdateComp(userid);
                                             });
                                         }
                                         connection.release();
@@ -153,9 +154,9 @@ exports.GetAppData = function (req, res) {
                                         cnt++;
                                         if (cnt == JsonData.appdata.length) {
                                             connection.query("select user_id from user_info where google_id = ?", id, function (err, result) {
-                                                id = result[0]['user_id'];
+                                                userid = result[0]['user_id'];
                                                 connection.release();
-                                                notyAppDataUpdateComp(id);
+                                                notyAppDataUpdateComp(userid);
                                             });
                                         }
                                         connection.release();
@@ -173,9 +174,9 @@ exports.GetAppData = function (req, res) {
                         cnt++;
                         if (cnt == JsonData.appdata.length) {
                             connection.query("select user_id from user_info where google_id = ?", id, function (err, result) {
-                                id = result[0]['user_id'];
+                                userid = result[0]['user_id'];
                                 connection.release();
-                                notyAppDataUpdateComp(id);
+                                notyAppDataUpdateComp(userid);
                             });
                         }
                         connection.release();
