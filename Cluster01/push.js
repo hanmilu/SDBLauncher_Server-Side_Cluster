@@ -45,6 +45,8 @@ exports.send_push = function(req, res) {
 	message.delayWhileIdle = true;
 	message.timeToLive = 3;
 
+	console.log(req.body.id);
+
     var connection = mysql.createConnection({
             host : "123.228.65.104",
             port : "4406",
@@ -56,7 +58,7 @@ exports.send_push = function(req, res) {
     connection.connect(function(err){
         if(err){
         }else{
-            connection.query("select reg_id from user_info", function(err, result){
+            connection.query("select reg_id from user_info where google_id = ?", req.body.id, function(err, result){
                 console.log(result[0]['reg_id']);
                 //registrationIds = result;
                 for(var i = 0; i < result.length; i++){

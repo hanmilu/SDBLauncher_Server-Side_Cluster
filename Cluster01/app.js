@@ -12,6 +12,7 @@ var push = require('./push');
 var mysql = require('mysql');
 var datahandler = require('./modules/datahandler.js');
 var userHandler = require('./modules/userhandler.js');
+var patternhandler = require('./modules/pattern.js');
 
 var app = express();
 
@@ -45,6 +46,8 @@ app.get('/send', push.send_push);
 app.post('/data', datahandler.collect);
 app.post('/appdata/append', datahandler.GetAppData);
 app.get('/appdata/append', datahandler.GetAppData);
+app.post('/appdata/get', datahandler.GetCategory);
+app.post('/pattern/getpattern', patternhandler.getPattern);
 //app.get('/data', datahandler.collect);
 
 http.createServer(app).listen(app.get('port'), '192.168.0.5', function(){

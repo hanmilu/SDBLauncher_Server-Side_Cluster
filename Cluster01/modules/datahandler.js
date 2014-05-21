@@ -4,7 +4,7 @@ var request = require('request');
 exports.collect = function(req, res) {
     var JsonData = req.body;
     var useridFromDB;
-    
+
     console.log("init DB Connection");
     var pool = mysql.createPool({
             host : "123.228.65.104",
@@ -79,7 +79,9 @@ exports.GetAppData = function (req, res) {
     });
 
     pool.getConnection(function (err, connection) {
-        var sql = "select if ( count ( app_id ) = 0, ?, 0) as res from app_info where package = ?;";
+        var sql = "select if ( count ( app_id ) = 0, ?, app_id) as res from app_info where package = ?;";
+        var token1 = '&access_token=e994786184258a89cdfc7a4b8307502408a978bf';
+        var token2 = '&access_token=aef684eb0f1b2d7d7983d0c81ac12685a96b8da5';
 
         for (var i = 0; i < JsonData.appdata.length; i++) {
             //connection.query(sql, function (err, result) {
@@ -87,43 +89,75 @@ exports.GetAppData = function (req, res) {
                 if (err) {
                     console.log(err);
                 }
+                connection.release();
 
-                if (result[0].res != 0) {
+                //console.log(result[0].res);
+                //console.log(isNaN(result[0].res));
+
+                if (isNaN(result[0].res)) {
                     console.log("request " + result[0].res);
-                    request.get('https://42matters.com/api/1/apps/lookup.json?p=' + result[0].res + ' + &access_token=e994786184258a89cdfc7a4b8307502408a978bf',
+                    request.get('https://42matters.com/api/1/apps/lookup.json?p=' + result[0].res + token2,
                         function (err, res, body) {
                             if (err) {
                                 console.log(err);
                             } else {
                                 if (res.statusCode == 404) { // cannot find app information on the market
-                                } else if (res.statusCode >= 400) { // api request limit
+                                    var sql4 = "insert into app_info (app_name, category, package) values (?);";
+                                    var data2 = [];
+
+                                    var appJson = JSON.parse(res.body);
+
+                                    //console.log(appJson.title);
+
+                                    data2.push(['Not Found', '0', result[0].res]);
+                                    //console.log(data2);
+
+                                    connection.query(sql4, data2, function (err, result) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        connection.release();
+                                    });
+                                } else if (res.statusCode == 403) { // api request limit
+                                    token1 = token2;
                                 } else { // append appdata to db
                                     var sql2 = "insert into app_info (app_name, category, package) values (?);";
                                     var data = [];
 
                                     var appJson = JSON.parse(res.body);
 
-                                    console.log(appJson.title);
+                                    //console.log(appJson.title);
 
                                     data.push([appJson.title, Number(appJson.cat_int), appJson.package_name]);
-                                    console.log(data);
+                                    //console.log(data);
 
                                     connection.query(sql2, data, function (err, result) {
                                         if (err) {
                                             console.log(err);
                                         }
+
+                                        connection.release();
                                     });
                                 }
                             }
+                        });
+                } else {
+                    var sql3 = "select * from app_info where app_id = ?;";
+
+                    connection.query(sql3, result[0].res, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        connection.release();
                     });
                 }
             });
         }
-        connection.release();
     });
 
     res.writeHead(200, { 'content-Type': 'text/plain' });
-    res.end("done");
+    res.end("processing");
 }
 
 exports.GetCategory = function(req, res) {
@@ -136,21 +170,33 @@ exports.GetCategory = function(req, res) {
             port : "4406",
             user : "clusters",
             password : "alfmvkr88",
-            database : "sdb_data"
+            database : "sdb_data",
+            charset: "euckr_korean_ci"
         });
 
-    for(var i = 0; i < JsonData.data.length; i++) {
-        //find appName in database
-        JsonData.data[i].appName;
-            //if there isn't
-    
-                //send package name to api server
+    pool.getConnection(function (err, connection) {
+        var sql = "select * from app_info where package in (";
+        var data = [];
+        var str = "";
 
-                    //response success
-                
-                    //response fail
-                        //use another api account
+        str += "'" + JsonData.appdata[0].packagename + "'";
+        for (var i = 1; i < JsonData.appdata.length; i++) {
+            str += ",'" + JsonData.appdata[i].packagename + "'";
+            data.push(JsonData.appdata[i].packagename);
+        }
 
-            //if there is
-    }
+        sql += str + ")";
+        connection.query(sql, function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+
+            connection.release();
+
+            res.charset = 'euckr_korean_ci';
+            res.writeHead(200, { 'content-Type': 'application/json', 'content-encoding': 'euckr', 'content-language': 'ko' });
+            console.log(result);
+            res.end(JSON.stringify(result));
+        });
+    });
 }
