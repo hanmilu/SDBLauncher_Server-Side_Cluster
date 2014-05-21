@@ -4,7 +4,7 @@ exports.signup = function (req, res) {
     var JsonData = req.body;
 
     var pool = mysql.createPool({
-        host: "123.228.65.104",
+        host: "192.168.0.2",
         port: "4406",
         user: "clusters",
         password: "alfmvkr88",

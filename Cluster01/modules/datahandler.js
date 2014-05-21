@@ -8,7 +8,7 @@ exports.collect = function(req, res) {
 
     console.log("init DB Connection");
     var pool = mysql.createPool({
-            host : "123.228.65.104",
+            host : "192.168.0.2",
             port : "4406",
             user : "clusters",
             password : "alfmvkr88",
@@ -72,7 +72,7 @@ exports.GetAppData = function (req, res) {
     var id = JsonData.id;
 
     var pool = mysql.createPool({
-        host: "123.228.65.104",
+        host: "192.168.0.2",
         port: "4406",
         user: "clusters",
         password: "alfmvkr88",
@@ -196,7 +196,7 @@ notyAppDataUpdateComp = function (id) {
     var registrationIds = [];
 
     var connection = mysql.createConnection({
-        host: "123.228.65.104",
+        host: "192.168.0.2",
         port: "4406",
         user: "clusters",
         password: "alfmvkr88",
@@ -239,7 +239,7 @@ exports.GetCategory = function(req, res) {
     var JsonData = req.body;
 
     var pool = mysql.createPool({
-            host : "123.228.65.104",
+            host : "192.168.0.2",
             port : "4406",
             user : "clusters",
             password : "alfmvkr88",

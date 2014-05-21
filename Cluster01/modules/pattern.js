@@ -3,7 +3,7 @@ var gcm = require('node-gcm');
 
 exports.getPattern = function(req, res) {
     var pool = mysql.createPool({
-        host: "123.228.65.104",
+        host: "192.168.0.2",
         port: "4406",
         user: "clusters",
         password: "alfmvkr88",
@@ -148,7 +148,7 @@ exports.singlePatternCmp = function (req, res) {
     message.timeToLive = 3;
 
     var connection = mysql.createConnection({
-        host: "123.228.65.104",
+        host: "192.168.0.2",
         port: "4406",
         user: "clusters",
         password: "alfmvkr88",
@@ -180,7 +180,7 @@ exports.singlePattern = function (req, res) {
     var id = req.body.id;
 
     var connection = mysql.createConnection({
-        host: "123.228.65.104",
+        host: "192.168.0.2",
         port: "4406",
         user: "clusters",
         password: "alfmvkr88",
