@@ -13,9 +13,9 @@ exports.getPattern = function(req, res) {
     console.log(req.body);
 
     var JsonData = req.body;
-    var longitude = JsonData.longitude * 10000000;
-    var latitude = JsonData.latitude * 10000000;
-
+    var longitude = (JsonData.longitude + 0.000001) * 10000000;
+    var latitude = (JsonData.latitude + 0.000001) * 10000000;
+        
     console.log(JsonData);
     
     var x = parseInt(1272000000 - longitude) / 10000;
@@ -48,7 +48,8 @@ exports.getPattern = function(req, res) {
             cnt = 0;
             console.log(result);
 
-            if (result[0].pattern_id) {
+            try {
+                result[0].pattern_id;
                 var sql2 = "select group_pattern.*, cat_info.cat_name from group_pattern "
                         + "inner join cat_info on group_pattern.category = cat_info.cat_id where group_pattern.pattern_id in ('" + result[0].pattern_id + "'";
 
@@ -116,7 +117,7 @@ exports.getPattern = function(req, res) {
                         res.end(JSON.stringify(resJson));
                     });
                 });
-            } else {
+            } catch (err) {
                 if (cnt == 0) {
                     console.log("cnt : " + cnt);
                     resJson.cnt = 0;

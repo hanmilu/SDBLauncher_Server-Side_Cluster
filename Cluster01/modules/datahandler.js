@@ -50,13 +50,9 @@ exports.collect = function(req, res) {
                         if (err) {
                             console.log(err);
                             connection.release();
-
-                            res.writeHead(200, {'content-Type' : 'text/plain'});
-	                        res.end('res');
                         }
                         if(i == JsonData.data.length) {
-                            res.writeHead(200, {'content-Type' : 'text/plain'});
-	                        res.end('res');
+	                        
                         }
                     });
                 }
@@ -65,6 +61,9 @@ exports.collect = function(req, res) {
         });
         connection.release();
     });
+
+    res.writeHead(200, { 'content-Type': 'text/plain' });
+    res.end('res');
 }
 
 exports.GetAppData = function (req, res) {
