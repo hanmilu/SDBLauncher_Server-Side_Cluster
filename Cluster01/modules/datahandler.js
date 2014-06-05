@@ -99,7 +99,7 @@ exports.GetAppData = function (req, res) {
 
                 if (isNaN(result[0].res)) {
                     console.log("request " + result[0].res);
-                    request.get('https://42matters.com/api/1/apps/lookup.json?p=' + result[0].res + token2,
+                    request.get('https://42matters.com/api/1/apps/lookup.json?p=' + result[0].res + token1,
                         function (err, res, body) {
                             if (err) {
                                 console.log(err);
@@ -130,7 +130,7 @@ exports.GetAppData = function (req, res) {
                                         connection.release();
                                     });
                                 } else if (res.statusCode == 403) { // api request limit
-                                    token1 = token2;
+                                    token1 = '&access_token=aef684eb0f1b2d7d7983d0c81ac12685a96b8da5';
                                     cnt++;
                                     if (cnt == JsonData.appdata.length) {
                                         notyAppDataUpdateComp(id);

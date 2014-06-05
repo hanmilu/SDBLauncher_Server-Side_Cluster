@@ -49,7 +49,9 @@ app.get('/appdata/append', datahandler.GetAppData);
 app.post('/appdata/get', datahandler.GetCategory);
 app.post('/pattern/getpattern', patternhandler.getPattern);
 app.post('/pattern/singlepatterncmp', patternhandler.singlePatternCmp);
+app.get('/pattern/singlepatterncmp', patternhandler.singlePatternCmp);
 app.post('/pattern/singlepattern', patternhandler.singlePattern);
+app.post('/pattern/singleapplication', patternhandler.singleApplication);
 //app.get('/data', datahandler.collect);
 
 http.createServer(app).listen(app.get('port'), '192.168.0.5', function(){

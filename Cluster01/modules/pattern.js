@@ -199,3 +199,34 @@ exports.singlePattern = function (req, res) {
         }
     });
 }
+
+exports.singleApplication = function (req, res) {
+    var id = req.body.id;
+
+    var parm = [];
+    var resobj = {};
+    var resArr = [];
+
+    var connection = mysql.createConnection({
+        host: "192.168.0.2",
+        port: "4406",
+        user: "clusters",
+        password: "alfmvkr88",
+        database: "sdb_data"
+    });
+
+    connection.connect(function (err) {
+        if (err) {
+        } else {
+            connection.query("select pattern_id from single_pattern where user_id = ?;", id, function (err, result) {
+                for (var i = 0; i < result.length; i++) {
+                    parm.push(result[i]['pattern_id']);
+                }
+                connection.query("select pattern_id, mode, count, app_name, package, caWtegory from single_application inner join app_info on single_application.app_id = app_info.app_id where pattern_id in (?) order by pattern_id, count;", [parm], function (err, result) {
+                    res.writeHead(200, { 'content-Type': 'application/json' });
+                    res.end(JSON.stringify(result));
+                });
+            });
+        }
+    });
+}
