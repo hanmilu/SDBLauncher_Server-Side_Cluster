@@ -38,6 +38,8 @@ exports.getPattern = function(req, res) {
         var sql = "select pattern_id from grid where grid_x >= ? and grid_x <= ? and grid_y >=? and grid_y <= ?;";
         var data = [x - 1, x + 1, y - 1, y + 1];
         var resJson = {};
+        var tempJson = {};
+        var tempArr = [];
 
         connection.query(sql, data, function (err, result) {
             if (err) {
@@ -50,7 +52,7 @@ exports.getPattern = function(req, res) {
 
             try {
                 result[0].pattern_id;
-                var sql2 = "select group_pattern.*, cat_info.cat_name from group_pattern "
+                var sql2 = "select group_pattern.*, cat_info.* from group_pattern "
                         + "inner join cat_info on group_pattern.category = cat_info.cat_id where group_pattern.pattern_id in ('" + result[0].pattern_id + "'";
 
                 for (var i = 1; i < result.length; i++) {
@@ -71,17 +73,18 @@ exports.getPattern = function(req, res) {
 
                         if (weight > max_weight) {
                             max_weight = weight;
-                            min_at = result[i]['center_longitude'];
+                            min_at = result[i]['pattern_id'];
+                            min_long = result[i]['center_longitude'];
                             min_lat = result[i]['center_latitude'];
                             min_num = result[i]['data_num'];
-                            min_cat = result[i]['cat_name'];
+                            min_cat = result[i]['cat_id'];
                             min_weight = result[i]['weight'];
                         }
                     }
 
                     var app_cnt = 0;
 
-                    var sql3 = "select group_application.*, app_info.app_name from group_application "
+                    var sql3 = "select group_application.*, app_info.* from group_application "
                             + "inner join app_info on group_application.app_id = app_info.app_id "
                             + "where group_application.pattern_id = " + min_at + " order by count desc;";
                     connection.query(sql3, function (err, result) {
@@ -90,19 +93,24 @@ exports.getPattern = function(req, res) {
                         }
                         connection.release();
 
+                        tempArr = [];
                         for (var i = 0; i < result.length; i++) {
                             ++app_cnt;
-                            var app_name = result[i]['app_info.appname'];
-                            var app_count = result[i]['group_application.count'];
+                            var app_name = result[i]['package'];
+                            var app_count = result[i]['count'];
 
-                            resJson.app_name = app_name;
-                            resJson.app_count = app_count;
+                            tempJson = {};
+                            tempJson.app_package = app_name;
+                            tempJson.app_count = app_count;
+
+                            tempArr.push(tempJson);
 
                             if (app_cnt == 3) {
                                 break;
                             }
                         }
 
+                        resJson.app_info = tempArr;
                         resJson.app_cnt = app_cnt;
                         resJson.best = min_at;
                         resJson.long = min_long;
@@ -222,7 +230,7 @@ exports.singleApplication = function (req, res) {
                 for (var i = 0; i < result.length; i++) {
                     parm.push(result[i]['pattern_id']);
                 }
-                connection.query("select pattern_id, mode, count, app_name, package, caWtegory from single_application inner join app_info on single_application.app_id = app_info.app_id where pattern_id in (?) order by pattern_id, count;", [parm], function (err, result) {
+                connection.query("select pattern_id, mode, count, app_name, package, category from single_application inner join app_info on single_application.app_id = app_info.app_id where pattern_id in (?) order by pattern_id, count;", [parm], function (err, result) {
                     res.writeHead(200, { 'content-Type': 'application/json' });
                     res.end(JSON.stringify(result));
                 });
