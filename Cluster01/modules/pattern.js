@@ -141,6 +141,7 @@ exports.getPattern = function(req, res) {
 exports.singlePatternCmp = function (req, res) {
 
     var id = req.body.id;
+    console.log(req.body);
 
     var message = new gcm.Message();
     var sender = new gcm.Sender('AIzaSyAcagZo44cCppJyvl_ZYVSwI7hlpTCOXD8');
