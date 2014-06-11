@@ -5,7 +5,7 @@ var gcm = require('node-gcm');
 exports.collect = function(req, res) {
     var JsonData = req.body;
     var useridFromDB;
-
+    console.log(JsonData);
     console.log("init DB Connection");
     var pool = mysql.createPool({
             host : "192.168.0.2",
@@ -40,7 +40,7 @@ exports.collect = function(req, res) {
                 for (var i = 0; i < JsonData.data.length; i++) {
                     values.push([Number(useridFromDB), Number(JsonData.data[i].longitude), Number(JsonData.data[i].latitude),
                         Number(JsonData.data[i].nowMode), Number(JsonData.data[i].category),
-                        JsonData.data[i].appName, Number(JsonData.data[i].timestamp)]);
+                        JsonData.data[i].application, Number(JsonData.data[i].timestamp)]);
                 }
                 if(err) {
                     console.log(err);
@@ -50,9 +50,6 @@ exports.collect = function(req, res) {
                         if (err) {
                             console.log(err);
                             connection.release();
-                        }
-                        if(i == JsonData.data.length) {
-	                        
                         }
                     });
                 }
